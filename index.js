@@ -1,14 +1,20 @@
 // Node.js WebSocket server script
 const http = require('http');
 const WebSocketServer = require('websocket').server;
-const server = http.createServer(function (req,res) {
-    res.write();
-    res.end()
-});
-server.listen(80);
+const express = require("express")
+const app = express()
+const server = http.createServer(app);
+const port = 80
+server.listen(port);
 const wsServer = new WebSocketServer({
     httpServer: server
 });
+
+app.get('/',(req,res) =>{
+    res.sendFile(__dirname+"/public/index.html")
+})
+app.use(express.static('public'))
+
 var connected = []
 wsServer.on('request', function(request) {
     const connection = request.accept(null, request.origin);

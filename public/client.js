@@ -3,7 +3,7 @@ $(document).ready(function () {
     let usernameContain = $("#username")
 
 
-    const ws = new WebSocket('ws://localhost:80/');
+    const ws = new WebSocket('ws://192.168.1.102:80/');
     ws.onopen = function () {
         console.log('WebSocket Client Connected');
         // ws.send('Hi this is web client.');
