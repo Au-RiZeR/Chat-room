@@ -4,14 +4,14 @@ const WebSocketServer = require('websocket').server;
 const express = require("express")
 const app = express()
 const server = http.createServer(app);
-const port = 80
+const port = 1025
 server.listen(port);
 const wsServer = new WebSocketServer({
     httpServer: server
 });
 
 app.get('/',(req,res) =>{
-    res.sendFile(__dirname+"/public/index.html")
+    res.sendFile(__dirname+"/public/indexa.html")
 })
 app.use(express.static('public'))
 
