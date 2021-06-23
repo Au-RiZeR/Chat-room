@@ -5,8 +5,8 @@ $(document).ready(function () {
     let wholeUser = $('#username')
 
 
-    // const ws = new WebSocket('ws://ottoline.madissia.com.au:1025/');
-    const ws = new WebSocket('ws://localhost:1025/');
+    const ws = new WebSocket('ws://ottoline.madissia.com.au:1025/');
+    //const ws = new WebSocket('ws://localhost:1025/');
     ws.onopen = function () {
         console.log('WebSocket Client Connected');
         // ws.send('Hi this is web client.');

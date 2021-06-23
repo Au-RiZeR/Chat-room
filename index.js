@@ -25,16 +25,13 @@ wsServer.on('request', function(request) {
     }
     // console.log(wsServer.connections[0].socket)
     connected.push(cone)
-    userCount()
     connection.on('message', function(message) {
-        userCount()
         let content = JSON.parse(message.utf8Data)
         console.log(message)
         relaymsg(cone,content)
     });
     connection.on('close', function(reasonCode, description) {
         // connected.splice(cone.id)
-        userCount()
         console.log('Client has disconnected.');
     });
 });
@@ -45,7 +42,7 @@ function relaymsg(sender,content){
         element.sendUTF(JSON.stringify({ "type":'add_message', "payload": `${content.username}: ${content.message}` }))}
     }
 }
-
+setInterval(userCount,10000)
 function userCount() {
     try {
         let count = wsServer.connections[0].socket._server._connections
@@ -54,7 +51,7 @@ function userCount() {
             element.sendUTF(JSON.stringify({ "type":'userCount', "payload": count }))};
       }
       catch(err) {
-        console.log(err)
+        // console.log(err)
       }
 
     
