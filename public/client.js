@@ -30,7 +30,7 @@ $(document).ready(function () {
 
     $(msgContain).keyup(function (e) {
         var key = e.which;
-        if (key == 13)  // the enter key code
+        if (key == 13 && msgContain.val())  // the enter key code
         {
             let username = $(usernameContain).val();
             let msg = $(msgContain).val().replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -68,6 +68,11 @@ $(document).ready(function () {
         if(count >= 50){
             $('#messages').find("div").slice(1,2).remove();
         }
-        console.log(count)
+        // console.log(count)
+        scroll()
+    }
+
+    function scroll(params) {
+        $("#messages").scrollTop($("#messages")[0].scrollHeight);
     }
 });

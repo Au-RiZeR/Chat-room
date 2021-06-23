@@ -29,7 +29,7 @@ wsServer.on('request', function(request) {
         relaymsg(cone,content)
     });
     connection.on('close', function(reasonCode, description) {
-        connected.splice(cone.id)
+        // connected.splice(cone.id)
         console.log('Client has disconnected.');
     });
 });
