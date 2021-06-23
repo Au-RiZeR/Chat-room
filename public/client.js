@@ -33,7 +33,7 @@ $(document).ready(function () {
         if (key == 13 && msgContain.val())  // the enter key code
         {
             let username = $(usernameContain).val();
-            let msg = $(msgContain).val().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            let msg = $(msgContain).val().replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/ig,"\n<a href=\"$&\" target=\"_blank\">$&</a>\n\t");
             let obj =
                 {
                     "username":username,
