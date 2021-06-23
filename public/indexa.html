@@ -23,7 +23,7 @@
                         <div class="content">
                             <div class="control has-icons-left has-icons-right">
                                 <input class="input is-large" type="text" id="usernameBox"
-                                    placeholder="Enter your Username" />
+                                    placeholder="Enter your Username" maxlength="30"/>
                                 <span class="icon is-medium is-left">
                                     <!-- <i class="fa fa-search"></i> -->
                                 </span>
@@ -44,7 +44,7 @@
                     <div class="card-content">
                         <div class="content">
                             <div class="control has-icons-left has-icons-right">
-                                <input class="input is-large" type="type" id="msgBox" placeholder="Message" />
+                                <input class="input is-large" type="type" id="msgBox" placeholder="Message" maxlength="300"/>
                                 <span class="icon is-medium is-left">
                                     <!-- <i class="fa fa-search"></i> -->
                                 </span>
@@ -79,7 +79,7 @@
                             <p>Chat room</p>
                             <button class="delete" aria-label="delete"></button>
                         </div>
-                        <div class="message-body" id="messages" style="overflow-y:scroll;">
+                        <div class="message-body" id="messages" style="overflow-y:auto;">
                         </div>
                     </article>
                 </div>

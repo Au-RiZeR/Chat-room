@@ -19,6 +19,7 @@ body {
 
 .message {
     height: 60vh;
+    /* max-width: 90vw; */
 }
 
 .message-body {
@@ -28,3 +29,8 @@ body {
 .message-header {
     height: 13%;
 }
+
+.break-word {
+    display: block;
+    word-wrap: break-word;
+  }

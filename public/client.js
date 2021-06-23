@@ -14,15 +14,26 @@ $(document).ready(function () {
         console.log(e.data)
         appendReceived()
         function appendReceived() {
-            let text = `<div class="board-item"><div class="board-item-content"><span>${e.data}</span></div></div>`
-        $('#messages').append(text);
-        messageCount()
-            
+            let text = `<div class="board-item"><div class="board-item-content break-word"><span class="break-word">${e.data}</span></div></div>`
+            $('#messages').append(text);
+            messageCount()
+
         }
     };
-    $(usernameContain).keyup(function (e) { 
+    $(usernameContain).keyup(function (e) {
         var key = e.which;
-        if (key == 13 && usernameContain.val()){
+        if (key == 13 && usernameContain.val()) {
+            let username = $(usernameContain).val();
+            let obj =
+            {
+                "username": username,
+                "message": "Joined The Chat-Room"
+            }
+            let json = JSON.stringify(obj)
+            let jsonparse = JSON.parse(json)
+            append(jsonparse)
+            messageSend(json)
+            messageCount()
             $(wholemsg).removeClass('is-hidden');
             $(wholeUser).addClass('is-hidden');
         }
@@ -33,13 +44,13 @@ $(document).ready(function () {
         if (key == 13 && msgContain.val())  // the enter key code
         {
             let username = $(usernameContain).val();
-            let msg = $(msgContain).val().replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/ig,"\n<a href=\"$&\" target=\"_blank\">$&</a>\n\t");
+            let msg = $(msgContain).val().replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/ig, "\n<a href=\"$&\" target=\"_blank\">$&</a>\n\t");
             let obj =
-                {
-                    "username":username,
-                    "message":msg
-                }
-            
+            {
+                "username": username,
+                "message": msg
+            }
+
             let json = JSON.stringify(obj)
             let jsonparse = JSON.parse(json)
             console.log(jsonparse.message)
@@ -54,8 +65,8 @@ $(document).ready(function () {
 
     function append(msg) {
         let text = `<div class="board-item"><div class="board-item-content"><span>You: ${msg.message}</span></div></div>`
-    $('#messages').append(text);
-        
+        $('#messages').append(text);
+
     }
 
     function messageSend(msg) {
@@ -63,10 +74,10 @@ $(document).ready(function () {
         ws.send(msg)
     }
 
-    function messageCount(){
+    function messageCount() {
         var count = $("#messages").children().length;
-        if(count >= 50){
-            $('#messages').find("div").slice(1,2).remove();
+        if (count >= 50) {
+            $('#messages').find("div").slice(1, 2).remove();
         }
         // console.log(count)
         scroll()
