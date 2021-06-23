@@ -25,6 +25,7 @@ wsServer.on('request', function(request) {
     }
     // console.log(wsServer.connections[0].socket)
     connected.push(cone)
+    userCount()
     connection.on('message', function(message) {
         userCount()
         let content = JSON.parse(message.utf8Data)
@@ -46,13 +47,15 @@ function relaymsg(sender,content){
 }
 
 function userCount() {
-    let count = wsServer.connections[0].socket._server._connections
-    // connected.forEach(element => 
-    //     element.sendUTF('hey')
-    for (let i = 0; i < connected.length; i++) {
-        const element = connected[i].user;
-        element.sendUTF(JSON.stringify({ "type":'userCount', "payload": count }))}
-        //
-    ;
+    try {
+        let count = wsServer.connections[0].socket._server._connections
+        for (let i = 0; i < connected.length; i++) {
+            const element = connected[i].user;
+            element.sendUTF(JSON.stringify({ "type":'userCount', "payload": count }))};
+      }
+      catch(err) {
+        console.log(err)
+      }
+
     
 }
