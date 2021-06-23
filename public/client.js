@@ -33,7 +33,7 @@ $(document).ready(function () {
         if (key == 13)  // the enter key code
         {
             let username = $(usernameContain).val();
-            let msg = $(msgContain).val();
+            let msg = $(msgContain).val().replace(/</g, "&lt;").replace(/>/g, "&gt;");
             let obj =
                 {
                     "username":username,
@@ -65,7 +65,7 @@ $(document).ready(function () {
 
     function messageCount(){
         var count = $("#messages").children().length;
-        if(count >= 20){
+        if(count >= 50){
             $('#messages').find("div").slice(1,2).remove();
         }
         console.log(count)
