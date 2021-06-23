@@ -5,16 +5,25 @@ $(document).ready(function () {
     let wholeUser = $('#username')
 
 
-    const ws = new WebSocket('ws://ottoline.madissia.com.au:1025/');
+    // const ws = new WebSocket('ws://ottoline.madissia.com.au:1025/');
+    const ws = new WebSocket('ws://localhost:1025/');
     ws.onopen = function () {
         console.log('WebSocket Client Connected');
         // ws.send('Hi this is web client.');
     };
     ws.onmessage = function (e) {
-        console.log(e.data)
-        appendReceived()
+        console.log(e)
+        let content = JSON.parse(e.data)
+        console.log(content)
+        if(content.type == "add_message"){
+            appendReceived()
+        }
+        if(content.type == "userCount"){
+            $("#userCount").text(`Global Users: ${content.payload}`)
+            
+        }
         function appendReceived() {
-            let text = `<div class="board-item"><div class="board-item-content break-word"><span class="break-word">${e.data}</span></div></div>`
+            let text = `<div class="board-item"><div class="board-item-content break-word"><span class="break-word">${content.payload}</span></div></div>`
             $('#messages').append(text);
             messageCount()
 

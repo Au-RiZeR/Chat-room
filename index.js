@@ -20,24 +20,39 @@ wsServer.on('request', function(request) {
     const connection = request.accept(null, request.origin);
     let cone = {
             "id":connected.length,
-            "user":connection
+            "user":connection,
+            // "name":""
     }
+    // console.log(wsServer.connections[0].socket)
     connected.push(cone)
     connection.on('message', function(message) {
+        userCount()
         let content = JSON.parse(message.utf8Data)
-
+        console.log(message)
         relaymsg(cone,content)
     });
     connection.on('close', function(reasonCode, description) {
         // connected.splice(cone.id)
+        userCount()
         console.log('Client has disconnected.');
     });
 });
 function relaymsg(sender,content){
-
     for (let i = 0; i < connected.length; i++) {
         const element = connected[i].user;
         if(element!=sender.user){
-        element.sendUTF(`${content.username}: ${content.message}`)}
+        element.sendUTF(JSON.stringify({ "type":'add_message', "payload": `${content.username}: ${content.message}` }))}
     }
+}
+
+function userCount() {
+    let count = wsServer.connections[0].socket._server._connections
+    // connected.forEach(element => 
+    //     element.sendUTF('hey')
+    for (let i = 0; i < connected.length; i++) {
+        const element = connected[i].user;
+        element.sendUTF(JSON.stringify({ "type":'userCount', "payload": count }))}
+        //
+    ;
+    
 }
