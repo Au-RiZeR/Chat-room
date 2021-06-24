@@ -3,8 +3,7 @@ $(document).ready(function () {
     let token = $("#token").html()
 
 // $(selector).html();
-    //const ws = new WebSocket('ws://ottoline.madissia.com.au:1025/');
-    const ws = new WebSocket('ws://localhost:1025/');
+    const ws = new WebSocket(`ws://${window.location.host}`);
     ws.onopen = function () {
         let joinobj = {
             "type": "message",
@@ -36,7 +35,7 @@ $(document).ready(function () {
         var key = e.which;
         if (key == 13 && msgContain.val())  // the enter key code
         {
-            let msg = $(msgContain).val().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            let msg = $(msgContain).val()
             let obj =
             {
                 "type": "message",

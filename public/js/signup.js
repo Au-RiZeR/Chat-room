@@ -4,8 +4,7 @@ $(document).ready(function () {
     let passwordConfirmContain = $('#passwordConfirm')
     let signup = $('#signup')
     
-    //const ws = new WebSocket('ws://ottoline.madissia.com.au:1025/');
-    const ws = new WebSocket('ws://localhost:1025/');
+    const ws = new WebSocket(`ws://${window.location.host}`);
     ws.onopen = function () {
         console.log('WebSocket Client Connected');
     };

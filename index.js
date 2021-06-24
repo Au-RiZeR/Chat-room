@@ -1,12 +1,12 @@
 // Node.js WebSocket server script
+require('dotenv').config()
 const http = require('http');
 const WebSocketServer = require('websocket').server;
 const express = require("express")
 const hbs = require('hbs')
 const app = express()
 const server = http.createServer(app);
-const port = 1025
-server.listen(port);
+server.listen(process.env.PORT);
 const wsServer = new WebSocketServer({
     httpServer: server
 });
@@ -46,6 +46,28 @@ app.get('/chat.html', async (req, res) => {
 })
 app.use(express.static('public'))
 
+function replaceMessageText(msg)
+{
+    return msg
+        .replace(/</g, "&lt;") // '<' to HTML-text equivalent
+        .replace(/>/g, "&gt;") // '>' to HTML-text equivalent
+
+        // Surround link-looking text with hyperlink elements <a></a>
+        .replace(/(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/ig, "\n<a href=\"$&\" target=\"_blank\">$&</a>\n\t")
+
+        // Replace ** pairs with bold tags
+        .replace(/\*\*(.+)\*\*/g, "<b>$1</b>")
+
+        // Replace * pairs with italic tags
+        .replace(/\*(.+)\*/g, "<i>$1</i>")
+
+        // Replace ~ pairs with strikethrough tags
+        .replace(/\~(.+)\~/g, "<s>$1</s>")
+
+        // Replace ` pairs with code tags
+        .replace(/\`(.+)\`/g, "<code>$1</code>")
+    }
+
 var connected = []
 
 wsServer.on('request', function (request) {
@@ -69,7 +91,7 @@ wsServer.on('request', function (request) {
             });
             let res = JSON.parse(JSON.stringify(search, null, 2))
             content.username = res.Username
-            content.message = msg.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/ig, "\n<a href=\"$&\" target=\"_blank\">$&</a>\n\t")
+            content.message = replaceMessageText(msg)
             relaymsg(content)
         }
         if (content.type == "loginRequest") {
@@ -148,9 +170,10 @@ function userCount() {
 }
 
 const { Sequelize, DataTypes, NUMBER } = require('sequelize');
-const sequelize = new Sequelize('chat', 'root', 'Passwordgoburr', {
-    host: 'localhost',
-    dialect: 'mysql'/* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
+const sequelize = new Sequelize(process.env.DB_TABLE, process.env.DB_USER, process.env.DB_PASS, {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 3306, // 3306 is default MySQL port
+    dialect: process.env.DB_TYPE /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
 });
 const User = sequelize.define('User', {
     // Model attributes are defined here
