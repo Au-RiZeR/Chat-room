@@ -1,1 +1,1 @@
-GET http://localhost:9898/
+GET http://localhost:3306/

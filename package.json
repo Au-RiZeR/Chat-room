@@ -9,8 +9,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "express": "^4.17.1",
+    "fetch": "^1.1.0",
+    "hbs": "^4.1.2",
+    "js-cookie": "^2.2.1",
+    "mysql2": "^2.2.5",
+    "node-fetch": "^2.6.1",
     "pubnub": "^4.32.1",
-    "websocket": "^1.0.34"
+    "sequelize": "^6.6.2",
+    "websocket": "^1.0.34",
+    "xmlhttprequest": "^1.8.0"
   }
 }
