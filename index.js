@@ -146,9 +146,11 @@ wsServer.on('request', function (request) {
     connection.on('close', function (reasonCode, description) {
         console.log(reasonCode)
         console.log(description)
-        connection.message = "has left the Chat Room"
-        connected.splice(connected.indexOf(connection.username),1)
-        relaymsg(connection)
+        if(reasonCode ==1006){
+            connection.message = "has left the Chat Room"
+            connected.splice(connected.indexOf(connection.username),1)
+            relaymsg(connection)
+        }
     });
 });
 
