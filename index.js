@@ -64,6 +64,9 @@ wsServer.on('request', function (request) {
 
     connection.on('message', async function (message) {
         let content = JSON.parse(message.utf8Data)
+        let cone = {
+            "user": connection
+        }
         console.log(message)
         if (content.type == "message") {
             let msg = content.message
@@ -81,7 +84,7 @@ wsServer.on('request', function (request) {
             content.message = replaceMessageText(msg)
             relaymsg(content)
             if (logged == 0) {
-                let cone = {
+                cone = {
                     "name": connection.name,
                     "user": connection,
                     "token": connection.token,
