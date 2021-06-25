@@ -5,6 +5,15 @@ $(document).ready(function () {
 // $(selector).html();
     const ws = new WebSocket(`ws://${window.location.host}`);
     ws.onopen = function () {
+        setInterval(() => {
+            let obj =
+            {
+                "type": "ping",
+                "token": token,
+            }
+            let json = JSON.stringify(obj)
+            messageSend(json)
+        }, 15000);
         let joinobj = {
             "type": "message",
             "token": token,
