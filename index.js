@@ -123,7 +123,6 @@ wsServer.on('request', function (request) {
             let password = content.password
             let passwordC = content.passwordC
             let token = content.Token
-            console.log()
             if (passwordC === password ) {
                 let search = await User.findOne({
                     where: {
@@ -223,7 +222,7 @@ async function addUser(username, password, token) {
 async function list(secret) {
     const users = await User.findAll();
     let userbase = JSON.stringify(users, null, 2);
-    console.log(JSON.parse(userbase))
+    // console.log(JSON.parse(userbase))
     let search = await User.findOne({
         where: {
             Token: secret
