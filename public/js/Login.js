@@ -13,7 +13,7 @@ $(document).ready(function () {
         console.log(content)
         if (content.type == "success") {
             let token = content.payload
-            window.location.href = `/chat.html?Token=${token}`;
+            window.location.href = `/chat.html?${token}`;
             console.log('logged in')
             $(usernameContain).addClass("is-success");
             $(Password).addClass("is-success");

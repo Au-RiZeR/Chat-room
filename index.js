@@ -10,7 +10,19 @@ server.listen(process.env.PORT);
 const wsServer = new WebSocketServer({
     httpServer: server
 });
-
+var tokens1 = 0
+var tokens2 = 0
+setTimeout(() => {
+    timer()
+}, 1000);
+function timer() {
+    setInterval(() => {
+        tokens2 = Math.random()
+    }, 2000);
+}
+setInterval(() => {
+    tokens1 = Math.random()
+}, 2000);
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 app.set('view engine', 'hbs')
@@ -21,21 +33,21 @@ app.get('/', async (req, res) => {
 app.get('/Login.html', async (req, res) => {
     res.sendFile(__dirname + "/public/Login.html")
 })
-app.get('/chat.html', async (req, res) => {
-    let query = NUMBER(req.query)
-    let token = query.options.Token
-    let corresponds = await list(token)
-    if (corresponds) {
-        var filler = {
-            Token: token
-        }
-        res.render('chat', { filler: filler })
-    }
-})
+// app.get('/chat.html', async (req, res) => {
+//     let query = NUMBER(req.query)
+//     // let token = query.options.Token
+//     if(tokens)
+//     let corresponds = await list(token)
+//     if (corresponds) {
+//         var filler = {
+//             Token: token
+//         }
+//         res.render('chat', { filler: filler })
+//     }
+// })
 app.use(express.static('public'))
 
-function replaceMessageText(msg)
-{
+function replaceMessageText(msg) {
     return msg
         .replace(/</g, "&lt;") // '<' to HTML-text equivalent
         .replace(/>/g, "&gt;") // '>' to HTML-text equivalent
@@ -54,16 +66,46 @@ function replaceMessageText(msg)
 
         // Replace ` pairs with code tags
         .replace(/\`(.+)\`/g, "<code>$1</code>")
-    }
+}
 
 var connected = []
 
 wsServer.on('request', function (request) {
     const connection = request.accept(null, request.origin);
     let logged = 0
+    app.set('view engine', 'hbs')
+    app.set('views', './views')
+
+
+    app.get('/chat.html', async (req, res) => {
+        try {
+            console.log("eeeeeeeeee")
+            let query = NUMBER(req.query)
+            let token = query.options.User
+            console.log(query.options.Token)
+            console.log(tokens1)
+            if (tokens1 == query.options.Token1 || tokens1 == query.options.Token2 || tokens2 == query.options.Token1 || tokens2 == query.options.Token2) {
+                let corresponds = await list(token)
+                if (corresponds) {
+                    var filler = {
+                        Token: token
+                    }
+                    console.log(filler.Token)
+                    res.render('chat', { filler: filler })
+                }
+            } else {
+                res.sendFile(__dirname + "/public/Login.html")
+            }
+
+        } catch (error) {
+            location.reload();
+        }
+    })
+
 
     connection.on('message', async function (message) {
         let content = JSON.parse(message.utf8Data)
+        // var tokens = Math.random()
         let cone = {
             "user": connection
         }
@@ -88,9 +130,9 @@ wsServer.on('request', function (request) {
                     "name": connection.name,
                     "user": connection,
                     "token": connection.token,
-                    "username": connection.username 
+                    "username": connection.username
                 }
-                connected.push(cone) 
+                connected.push(cone)
                 logged++
             }
 
@@ -107,7 +149,9 @@ wsServer.on('request', function (request) {
             if (res) {
                 if (password === res.Password) {
                     console.log('correct')
-                    send(cone.user, "success", res.Token)
+                    let token = res.Token
+                    console.log(tokens1)
+                    send(cone.user, "success", `Token1=${tokens1}&Token2=${tokens2}&User=${token}`)
 
                 } else {
                     //if Password is wrong
@@ -123,14 +167,14 @@ wsServer.on('request', function (request) {
             let password = content.password
             let passwordC = content.passwordC
             let token = content.Token
-            if (passwordC === password ) {
+            if (passwordC === password) {
                 let search = await User.findOne({
                     where: {
                         Username: username
                     }
                 });
                 let res = JSON.parse(JSON.stringify(search, null, 2))
-                if (!res && username.search(/^(?! )[A-Za-z0-9 ]*(?<! )$/gm) !=-1) {
+                if (!res && username.search(/^(?! )[A-Za-z0-9 ]*(?<! )$/gm) != -1) {
                     send(cone.user, "success")
                     addUser(username, password, token)
                 } else {
@@ -146,9 +190,9 @@ wsServer.on('request', function (request) {
     connection.on('close', function (reasonCode, description) {
         console.log(reasonCode)
         console.log(description)
-        if(reasonCode > 1001){
+        if (reasonCode > 1001) {
             connection.message = "has left the Chat Room"
-            connected.splice(connected.indexOf(connection.username),1)
+            connected.splice(connected.indexOf(connection.username), 1)
             relaymsg(connection)
         }
     });
@@ -160,19 +204,19 @@ function send(sender, type, content) {
 
 function relaymsg(content) {
     connected.forEach(element => {
-        element.user.sendUTF(JSON.stringify({ "type": 'add_message', "payload": `${content.username}: ${content.message}` }))   
+        element.user.sendUTF(JSON.stringify({ "type": 'add_message', "payload": `${content.username}: ${content.message}` }))
     });
 }
 setInterval(userCount, 5000)
 function userCount() {
     try {
-        let userString =" "
+        let userString = " "
         for (let i = 0; i < connected.length; i++) {
             const element = connected[i].name;
             userString = userString.concat(` ${element},`)
         };
         connected.forEach(element => {
-            element.user.sendUTF(JSON.stringify({ "type": 'userCount', "payload": userString }))   
+            element.user.sendUTF(JSON.stringify({ "type": 'userCount', "payload": userString }))
         });
     }
     catch (err) {
