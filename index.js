@@ -10,6 +10,7 @@ server.listen(process.env.PORT);
 const wsServer = new WebSocketServer({
     httpServer: server
 });
+var hash = require('hash.js')
 var tokens1 = 0
 var tokens2 = 0
 setTimeout(() => {
@@ -147,7 +148,7 @@ wsServer.on('request', function (request) {
             });
             let res = JSON.parse(JSON.stringify(search, null, 2))
             if (res) {
-                if (password === res.Password) {
+                if (hash.sha256().update(password).digest('hex') === res.Password) {
                     console.log('correct')
                     let token = res.Token
                     console.log(tokens1)
@@ -176,7 +177,7 @@ wsServer.on('request', function (request) {
                 let res = JSON.parse(JSON.stringify(search, null, 2))
                 if (!res && username.search(/^(?! )[A-Za-z0-9 ]*(?<! )$/gm) != -1) {
                     send(cone.user, "success")
-                    addUser(username, password, token)
+                    addUser(username, hash.sha256().update(password).digest('hex'), token)
                 } else {
                     send(cone.user, "failed")
                     // Username Invalid
@@ -253,7 +254,7 @@ async function test() {
     try {
         await sequelize.authenticate();
         console.log('Connection has been established successfully.');
-        await sequelize.sync({ force: false });
+        await sequelize.sync({ force: true });
         console.log("All models were synchronized successfully.");
     } catch (error) {
         console.error('Unable to connect to the database:', error);
@@ -261,7 +262,7 @@ async function test() {
 }
 
 async function addUser(username, password, token) {
-    await User.create({ Username: username, Password: password, Token: token })
+    await User.create({ Username: username, Password: hash.sha256().update(password).digest('hex'), Token: token })
 
 }
 
@@ -276,3 +277,8 @@ async function list(secret) {
     });
     return search//JSON.parse(JSON.stringify(search, null, 2))
 }
+
+
+console.log(
+hash.sha256().update('abcd').digest('hex')
+)
