@@ -146,7 +146,7 @@ wsServer.on('request', function (request) {
     connection.on('close', function (reasonCode, description) {
         console.log(reasonCode)
         console.log(description)
-        if(reasonCode ==1006){
+        if(reasonCode > 1001){
             connection.message = "has left the Chat Room"
             connected.splice(connected.indexOf(connection.username),1)
             relaymsg(connection)
