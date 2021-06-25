@@ -16,18 +16,7 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 app.set('view engine', 'hbs')
 app.set('views', './views')
 app.get('/', async (req, res) => {
-    // console.log(req.query)
     res.sendFile(__dirname + "/public/Login.html")
-    // res.render('demo')
-    // res.render('dynamic', {demo : demo})
-    // var demo = {
-    //      name : 'Rohan',
-    //      age : 26
-    //  }
-
-
-    //      res.render('dynamic', {demo : demo})
-
 })
 app.get('/Login.html', async (req, res) => {
     res.sendFile(__dirname + "/public/Login.html")
@@ -38,7 +27,6 @@ app.get('/chat.html', async (req, res) => {
     let corresponds = await list(token)
     if (corresponds) {
         var filler = {
-            // name : 'Rohan',
             Token: token
         }
         res.render('chat', { filler: filler })
@@ -72,11 +60,7 @@ var connected = []
 
 wsServer.on('request', function (request) {
     const connection = request.accept(null, request.origin);
-    let cone = {
-        "id": connected.length,
-        "user": connection,
-    }
-    connected.push(cone)
+    let logged = 0
 
     connection.on('message', async function (message) {
         let content = JSON.parse(message.utf8Data)
@@ -84,6 +68,7 @@ wsServer.on('request', function (request) {
         if (content.type == "message") {
             let msg = content.message
             let token = content.token
+            connection.token = token
             let search = await User.findOne({
                 where: {
                     Token: token
@@ -91,8 +76,21 @@ wsServer.on('request', function (request) {
             });
             let res = JSON.parse(JSON.stringify(search, null, 2))
             content.username = res.Username
+            connection.username = `<s>${res.Username}<s>`
+            connection.name = res.Username
             content.message = replaceMessageText(msg)
             relaymsg(content)
+            if (logged == 0) {
+                let cone = {
+                    "name": connection.name,
+                    "user": connection,
+                    "token": connection.token,
+                    "username": connection.username 
+                }
+                connected.push(cone) 
+                logged++
+            }
+
         }
         if (content.type == "loginRequest") {
             let username = content.username
@@ -122,27 +120,33 @@ wsServer.on('request', function (request) {
             let password = content.password
             let passwordC = content.passwordC
             let token = content.Token
-            if (passwordC === password) {
+            console.log()
+            if (passwordC === password ) {
                 let search = await User.findOne({
                     where: {
                         Username: username
                     }
                 });
                 let res = JSON.parse(JSON.stringify(search, null, 2))
-                if (!res) {
+                if (!res && username.search(/^(?! )[A-Za-z0-9 ]*(?<! )$/gm) !=-1) {
                     send(cone.user, "success")
                     addUser(username, password, token)
                 } else {
                     send(cone.user, "failed")
+                    // Username Invalid
                 }
             } else {
                 send(cone.user, "passNoMatch")
-                //username doesn't exist
+                //Passwords don't match
             }
         }
     });
     connection.on('close', function (reasonCode, description) {
-        console.log('Client has disconnected.');
+        console.log(reasonCode)
+        console.log(description)
+        connection.message = "has left the Chat Room"
+        connected.splice(connected.indexOf(connection.username),1)
+        relaymsg(connection)
     });
 });
 
@@ -155,14 +159,17 @@ function relaymsg(content) {
         element.user.sendUTF(JSON.stringify({ "type": 'add_message', "payload": `${content.username}: ${content.message}` }))   
     });
 }
-setInterval(userCount, 10000)
+setInterval(userCount, 5000)
 function userCount() {
     try {
-        let count = wsServer.connections[0].socket._server._connections
+        let userString =" "
         for (let i = 0; i < connected.length; i++) {
-            const element = connected[i].user;
-            element.sendUTF(JSON.stringify({ "type": 'userCount', "payload": count }))
+            const element = connected[i].name;
+            userString = userString.concat(` ${element},`)
         };
+        connected.forEach(element => {
+            element.user.sendUTF(JSON.stringify({ "type": 'userCount', "payload": userString }))   
+        });
     }
     catch (err) {
         // console.log(err)
@@ -173,7 +180,7 @@ const { Sequelize, DataTypes, NUMBER } = require('sequelize');
 const sequelize = new Sequelize(process.env.DB_TABLE, process.env.DB_USER, process.env.DB_PASS, {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 3306, // 3306 is default MySQL port
-    dialect: process.env.DB_TYPE /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
+    dialect: process.env.DB_TYPE // Place your DB here eg. 'mysql'
 });
 const User = sequelize.define('User', {
     // Model attributes are defined here
