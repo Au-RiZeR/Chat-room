@@ -262,7 +262,7 @@ async function test() {
 }
 
 async function addUser(username, password, token) {
-    await User.create({ Username: username, Password: hash.sha256().update(password).digest('hex'), Token: token })
+    await User.create({ Username: username, Password: password, Token: token })
 
 }
 
@@ -275,10 +275,5 @@ async function list(secret) {
             Token: secret
         }
     });
-    return search//JSON.parse(JSON.stringify(search, null, 2))
+    return search
 }
-
-
-console.log(
-hash.sha256().update('abcd').digest('hex')
-)
